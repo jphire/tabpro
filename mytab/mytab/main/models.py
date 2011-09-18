@@ -14,4 +14,10 @@ class Habitant(models.Model):
     address = models.ForeignKey(Appartment)
 
     def __unicode__(self):
-        return self.name
+        return self.number
+
+class Key(models.Model):
+    number = models.IntegerField()
+        
+    def __unicode__(self):
+        return self.number
