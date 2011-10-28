@@ -11,21 +11,20 @@ class House(models.Model):
         return self.road + " " + self.number 
     
 class Appartment(models.Model):
-    road = models.ForeignKey(House, to_field=House.road, unique_together=True)
-    road_number = models.ForeignKey(House, to_field=House.number, unique_together=True)
-    stair = models.CharField(max_length=2, unique_together=True)
-    appartment_number = models.IntegerField(unique_together=True)
+    house = models.ForeignKey(House, blank=True)
+    stair = models.CharField(max_length=2)
+    appartment_number = models.IntegerField(blank=True)
         
     def __unicode__(self):
-        return self.road + " " + self.road_number + " " + self.stair + " " + self.appartment_number
+        return self.house.road + " " + self.house.number + " " + self.stair + " " + str(self.appartment_number)
 
 class Habitant(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    social_security = models.CharField(11)
-    house = models.ForeignKey(House, blank=True)
+    social_security = models.CharField(max_length=11)
+    #house = models.ForeignKey(House, blank=True)
     appartment = models.ForeignKey(Appartment, blank=True)
-    phone = models.IntegerField(blank=True)
+    phone = models.CharField(max_length=20, blank=True)
 
     def __unicode__(self):
         return self.first_name + " " + self.last_name
@@ -35,18 +34,18 @@ class Key(models.Model):
     appartment = models.ForeignKey(Appartment)
     owner = models.ForeignKey(Habitant, blank=True)
     key_acquired_date = models.DateField()
-    key_given_back_date = models.DateField()
+    key_given_back_date = models.DateField(blank=True)
     
     def __unicode__(self):
         return self.key_id
     
 class TargetOfReservation(models.Model):
     house = models.ForeignKey(House)
-    name = models.CharField(30)
-    info = models.TextField()
+    name = models.CharField(max_length=30)
+    info = models.TextField(blank=True)
     
     def __unicode__(self):
-        return self.house + "/" + self.name
+        return self.house + " / " + self.name
     
 class Reservation(models.Model):
     number = models.IntegerField(primary_key=True)
@@ -56,7 +55,7 @@ class Reservation(models.Model):
     end_date = models.DateTimeField()
     
     def __unicode__(self):
-        return self.number + " created:" + self.created_date
+        return self.number + ", created: " + self.created_date
 
 class Employee(models.Model):
     name = models.CharField(max_length=40)
@@ -67,12 +66,12 @@ class Employee(models.Model):
         return self.name
 
 class WorkOrder(models.Model):
-    order_creator = models.ForeignKey(Employee)
-    order_finisher = models.ForeignKey(Employee, blank=True)
+    order_creator = models.ForeignKey(Employee, related_name='creator')
+    order_finisher = models.ForeignKey(Employee, related_name='finisher', blank=True)
     target = models.CharField(max_length=40)
-    info = models.TextField()
+    info = models.TextField(blank=True)
     order_made_date = models.DateTimeField()
-    work_done_date = models.DateTimeField()
+    work_done_date = models.DateTimeField(blank=True)
     
     def __unicode__(self):
         return self.pk
